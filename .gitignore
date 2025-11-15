@@ -37,3 +37,6 @@ server/data/*.db-journal
 # Keep data directory but ignore database files
 !server/data/.gitkeep
 
+# Documentation text files
+*.txt
+
