@@ -1,0 +1,88 @@
+================================================================================
+PUSH TO GITHUB - QUICK STEPS
+================================================================================
+
+Your code is committed locally. Now you need to push it to GitHub.
+
+================================================================================
+OPTION 1: CREATE NEW GITHUB REPOSITORY (Recommended)
+================================================================================
+
+Step 1: Create Repository on GitHub
+-----------------------------------
+1. Go to https://github.com
+2. Click the "+" icon in top right → "New repository"
+3. Repository name: feedback-dashboard (or your choice)
+4. Description: "Full-stack Feedback Management Dashboard with React, Express, and SQLite"
+5. Visibility: Public or Private (your choice)
+6. DO NOT check "Initialize with README"
+7. DO NOT add .gitignore or license
+8. Click "Create repository"
+
+Step 2: Copy Repository URL
+-----------------------------
+After creating, GitHub will show you commands. Copy the repository URL.
+It will look like: https://github.com/YOUR_USERNAME/REPO_NAME.git
+
+Step 3: Connect and Push
+------------------------
+Run these commands (replace with your actual URL):
+
+git remote add origin https://github.com/YOUR_USERNAME/REPO_NAME.git
+git branch -M main
+git push -u origin main
+
+If asked for credentials:
+- Username: Your GitHub username
+- Password: Use a Personal Access Token (not your password)
+  - Create token: GitHub Settings → Developer settings → Personal access tokens → Generate new token
+  - Select scope: repo (all)
+  - Copy token and use it as password
+
+================================================================================
+OPTION 2: USE EXISTING REPOSITORY
+================================================================================
+
+If you already have a GitHub repository:
+
+1. Get your repository URL from GitHub
+2. Run:
+   git remote add origin https://github.com/YOUR_USERNAME/REPO_NAME.git
+   git branch -M main
+   git push -u origin main
+
+================================================================================
+TROUBLESHOOTING
+================================================================================
+
+Issue: "remote origin already exists"
+Solution:
+  git remote remove origin
+  git remote add origin https://github.com/YOUR_USERNAME/REPO_NAME.git
+
+Issue: Authentication failed
+Solution:
+  - Use Personal Access Token instead of password
+  - Create token: GitHub Settings → Developer settings → Personal access tokens
+  - Select scope: repo (all)
+  - Use token as password when pushing
+
+Issue: "failed to push some refs"
+Solution:
+  git pull origin main --allow-unrelated-histories
+  git push -u origin main
+
+================================================================================
+AFTER PUSHING
+================================================================================
+
+Once pushed, your repository will be available at:
+https://github.com/YOUR_USERNAME/REPO_NAME
+
+You can then:
+- Share the repository link
+- Deploy to Vercel/Render (see DEPLOYMENT_GUIDE.txt)
+- Continue development and push updates with: git push
+
+================================================================================
+
