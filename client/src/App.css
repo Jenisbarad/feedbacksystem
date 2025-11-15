@@ -24,7 +24,39 @@ body {
 
 .container {
   width: 100%;
-  max-width: 600px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Navigation Tabs */
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.tab {
+  padding: 12px 24px;
+  border: 2px solid #c4d4b8;
+  background: white;
+  color: #6b7f5a;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.tab:hover {
+  background: #f8f9f6;
+  border-color: #9caf88;
+}
+
+.tab.active {
+  background: linear-gradient(135deg, #87a96b 0%, #9caf88 100%);
+  color: white;
+  border-color: #9caf88;
 }
 
 .form-wrapper {
@@ -115,6 +147,32 @@ h1 {
 .form-group textarea {
   resize: vertical;
   min-height: 120px;
+}
+
+/* Rating Number Input */
+.rating-number-input {
+  width: 100%;
+  padding: 14px 18px;
+  border: 2px solid #f0d0d5;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: all 0.3s ease;
+  background-color: #fafafa;
+  color: #4a4a4a;
+}
+
+.rating-number-input:focus {
+  outline: none;
+  border-color: #9caf88;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(156, 175, 136, 0.15);
+}
+
+.rating-number-input::-webkit-inner-spin-button,
+.rating-number-input::-webkit-outer-spin-button {
+  opacity: 1;
+  height: auto;
 }
 
 .submit-btn {

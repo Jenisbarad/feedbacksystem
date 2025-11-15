@@ -1,7 +1,8 @@
 const express = require('express');
 const cors = require('cors');
-const fs = require('fs');
 const path = require('path');
+const fs = require('fs');
+const { getAllFeedbacks, addFeedback, getStats } = require('./database');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -10,55 +11,48 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// Data file path
-const DATA_FILE = path.join(__dirname, 'data', 'feedback.json');
-
 // Ensure data directory exists
-const dataDir = path.dirname(DATA_FILE);
+const dataDir = path.join(__dirname, 'data');
 if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir, { recursive: true });
 }
 
-// Initialize data file if it doesn't exist
-if (!fs.existsSync(DATA_FILE)) {
-  fs.writeFileSync(DATA_FILE, JSON.stringify([], null, 2));
-}
-
-// Helper function to read feedback
-const readFeedback = () => {
-  try {
-    const data = fs.readFileSync(DATA_FILE, 'utf8');
-    return JSON.parse(data);
-  } catch (error) {
-    return [];
-  }
-};
-
-// Helper function to write feedback
-const writeFeedback = (data) => {
-  fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
-};
-
 // Routes
 
 // Get all feedback
-app.get('/api/feedback', (req, res) => {
+app.get('/api/feedback', async (req, res) => {
   try {
-    const feedback = readFeedback();
+    const feedback = await getAllFeedbacks();
     res.json(feedback);
   } catch (error) {
+    console.error('Error fetching feedback:', error);
     res.status(500).json({ error: 'Failed to fetch feedback' });
   }
 });
 
-// Submit new feedback
-app.post('/api/feedback', (req, res) => {
+// Get statistics
+app.get('/api/stats', async (req, res) => {
   try {
-    const { name, email, message } = req.body;
+    const stats = await getStats();
+    res.json(stats);
+  } catch (error) {
+    console.error('Error fetching stats:', error);
+    res.status(500).json({ error: 'Failed to fetch statistics' });
+  }
+});
+
+// Submit new feedback
+app.post('/api/feedback', async (req, res) => {
+  try {
+    const { name, email, message, rating } = req.body;
 
     // Validation
-    if (!name || !email || !message) {
-      return res.status(400).json({ error: 'All fields are required' });
+    if (!name || !message) {
+      return res.status(400).json({ error: 'Name and message are required' });
+    }
+
+    if (!email) {
+      return res.status(400).json({ error: 'Email is required' });
     }
 
     // Email validation
@@ -67,23 +61,28 @@ app.post('/api/feedback', (req, res) => {
       return res.status(400).json({ error: 'Invalid email format' });
     }
 
-    const feedback = readFeedback();
-    const newFeedback = {
-      id: Date.now().toString(),
-      name: name.trim(),
-      email: email.trim(),
-      message: message.trim(),
-      createdAt: new Date().toISOString()
-    };
+    // Rating validation
+    if (!rating || rating < 1 || rating > 5) {
+      return res.status(400).json({ error: 'Rating must be between 1 and 5' });
+    }
 
-    feedback.push(newFeedback);
-    writeFeedback(feedback);
+    const newFeedback = await addFeedback(
+      name.trim(),
+      email.trim(),
+      message.trim(),
+      parseInt(rating)
+    );
+
+    // Fetch the complete feedback with createdAt
+    const allFeedbacks = await getAllFeedbacks();
+    const createdFeedback = allFeedbacks.find(f => f.id === newFeedback.id);
 
     res.status(201).json({ 
       message: 'Feedback submitted successfully',
-      feedback: newFeedback 
+      feedback: createdFeedback
     });
   } catch (error) {
+    console.error('Error submitting feedback:', error);
     res.status(500).json({ error: 'Failed to submit feedback' });
   }
 });
@@ -94,7 +93,12 @@ app.get('/api/health', (req, res) => {
 });
 
 // Start server
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`Server is running on port ${PORT}`);
+  // Initialize database on startup
+  try {
+    await require('./database').getDatabase();
+  } catch (error) {
+    console.error('Database initialization error:', error);
+  }
 });
-
