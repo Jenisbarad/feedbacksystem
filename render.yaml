@@ -1,0 +1,33 @@
+# Render Blueprint Configuration
+# This file can be used to deploy both services at once using Render Blueprint
+
+services:
+  # Backend Service
+  - type: web
+    name: feedback-form-backend
+    env: node
+    region: oregon  # Change to your preferred region
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    rootDir: server
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+
+  # Frontend Service
+  - type: web
+    name: feedback-form-frontend
+    env: static
+    region: oregon  # Change to your preferred region
+    plan: free
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./build
+    rootDir: client
+    envVars:
+      - key: REACT_APP_API_URL
+        value: https://feedback-form-backend.onrender.com
+        # Update this URL after backend is deployed
+
